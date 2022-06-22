@@ -52,7 +52,7 @@ namespace CommentTMDT.Controller
             await Task.WhenAll(task1, task2);
 
             count = task1.Result + task2.Result;
-            await tgl.SendMessageToChannel($"Done {count} comment of tiki", Config_System.ID_TELEGRAM_BOT_GROUP_COMMENT_ECO);
+            await tgl.SendMessageToChannel($"Done {count} comment of Meta", Config_System.ID_TELEGRAM_BOT_GROUP_COMMENT_ECO);
         }
 
         private async Task<uint> GetCommentProduct(ushort delay)
@@ -199,7 +199,7 @@ namespace CommentTMDT.Controller
                             string json = JsonSerializer.Serialize(item);
                             Util.InsertPost(json);
 
-                            await Task.Delay(500);
+                            await Task.Delay(50);
                         }
                     }
 

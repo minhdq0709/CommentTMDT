@@ -28,7 +28,7 @@ namespace CommentTMDT.Controller
             tgl = new Telegram_Helper(Config_System.KEY_BOT);
         }
 
-        public async Task CrawData(string pathFolder)
+        public async Task CrawData()
         {
             uint count = 0;
 
@@ -49,6 +49,16 @@ namespace CommentTMDT.Controller
 
             /* Next data */
             start += 100;
+
+            Task<uint> task1 = GetCommentProduct(4_000);
+            Task<uint> task2 = GetCommentProduct(5_000);
+            Task<uint> task3 = GetCommentProduct(3_000);
+            Task<uint> task4 = GetCommentProduct(2_000);
+
+            await Task.WhenAll(task1, task2, task3, task4);
+
+            count = task1.Result + task2.Result + task3.Result + task4.Result;
+            await tgl.SendMessageToChannel($"Done {count} comment of Sendo", Config_System.ID_TELEGRAM_BOT_GROUP_COMMENT_ECO);
         }
 
         private async Task<uint> GetCommentProduct(ushort delay)
@@ -80,8 +90,14 @@ namespace CommentTMDT.Controller
                         string url = builder.ToString();
 
                         string json = await _client.GetStringAsync(url).ConfigureAwait(false);
-                        SendoModel.Root data = JsonSerializer.Deserialize<SendoModel.Root>(json);
-                        if (data.data == null || !data.data.Any())
+                        SendoModel.Root data = null;
+                        try
+                        {
+                            data = JsonSerializer.Deserialize<SendoModel.Root>(json);
+                        }
+                        catch(Exception ex) { }
+
+                        if (data?.data == null || !data.data.Any())
                         {
                             break;
                         }
@@ -105,6 +121,7 @@ namespace CommentTMDT.Controller
                                 cmtJson.Id = Util.ConvertStringtoMD5(url + cmtJson.PostDateTimeStamp.ToString() + cmtJson.IdComment);
 
                                 lstData.Add(cmtJson);
+                                ++count;
                             }
                         }
 
@@ -121,7 +138,7 @@ namespace CommentTMDT.Controller
                         string json = JsonSerializer.Serialize(item);
                         Util.InsertPost(json);
 
-                        await Task.Delay(500);
+                        await Task.Delay(50);
                     }
                 }
 

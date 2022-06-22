@@ -193,7 +193,7 @@ namespace CommentTMDT
                             lbIsError.Text = $"Có lỗi";
                         }
 
-                        await Task.Delay(TimeSpan.FromHours(1));
+                        await Task.Delay(TimeSpan.FromMinutes(10));
                     }
                 case NamePage.KID_PLAZA:
                     InitBrowser("https://www.kidsplaza.vn/");
@@ -247,7 +247,24 @@ namespace CommentTMDT
                         await Task.Delay(TimeSpan.FromMinutes(10));
                     }
                 case NamePage.SENDO:
-                    break;
+                    Sendo sd = new Sendo();
+                    while (true)
+                    {
+                        try
+                        {
+                            lbStatus.Text = "Đang chạy";
+                            lbIsError.Text = "Ko lỗi";
+
+                            await sd.CrawData();
+                            lbStatus.Text = $"Đang dừng {DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss")}";
+                        }
+                        catch (Exception)
+                        {
+                            lbIsError.Text = "Co lỗi";
+                        }
+
+                        await Task.Delay(TimeSpan.FromMinutes(10));
+                    }
                 case NamePage.SHOPEE:
                     break;
                 case NamePage.TIKI:
@@ -262,7 +279,7 @@ namespace CommentTMDT
                             await tk.CrawlData();
                             lbStatus.Text = $"Đang dừng {DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss")}";
                         }
-                        catch (Exception) {
+                        catch (Exception ex) {
                             lbIsError.Text = "Co lỗi";
                         }
 

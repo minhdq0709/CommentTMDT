@@ -77,7 +77,7 @@ namespace CommentTMDT.Model
             public string avatar_url { get; set; }
             public string created_time { get; set; }
             public bool purchased { get; set; }
-            public int purchased_at { get; set; }
+            public int? purchased_at { get; set; }
             public ContributeInfo contribute_info { get; set; }
         }
 
@@ -105,7 +105,7 @@ namespace CommentTMDT.Model
             public string status { get; set; }
             public int thank_count { get; set; }
             public double score { get; set; }
-            public double new_score { get; set; }
+            public double? new_score { get; set; }
             public int customer_id { get; set; }
             public int comment_count { get; set; }
             public int rating { get; set; }

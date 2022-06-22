@@ -53,7 +53,7 @@ namespace CommentTMDT.Controller
                         string json = JsonSerializer.Serialize(item1);
                         Util.InsertPost(json);
 
-                        await Task.Delay(500);
+                        await Task.Delay(50);
                     }
                 }
 

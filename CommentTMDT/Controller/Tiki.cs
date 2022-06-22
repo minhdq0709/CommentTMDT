@@ -53,10 +53,12 @@ namespace CommentTMDT.Controller
 
             Task<uint> task1 = GetCommentProduct(1_000);
             Task<uint> task2 = GetCommentProduct(2_000);
+            Task<uint> task3 = GetCommentProduct(3_000);
+            Task<uint> task4 = GetCommentProduct(4_000);
 
-            await Task.WhenAll(task1, task2);
+            await Task.WhenAll(task1, task2, task3, task4);
 
-            count = task1.Result + task2.Result;
+            count = task1.Result + task2.Result + task3.Result + task4.Result;
             await tgl.SendMessageToChannel($"Done {count} comment of tiki", Config_System.ID_TELEGRAM_BOT_GROUP_COMMENT_ECO);
         }
 
@@ -109,15 +111,21 @@ namespace CommentTMDT.Controller
 
                     await Task.Delay(delay);
 
-                    TikiModel.Root tiki = JsonSerializer.Deserialize<TikiModel.Root>(json);
-                    if (tiki.data == null || !tiki.data.Any())
+                    TikiModel.Root tiki = null;
+                    try
+                    {
+                        tiki = JsonSerializer.Deserialize<TikiModel.Root>(json);
+                    }
+                    catch (Exception ex) { }
+
+                    if (tiki?.data == null || !tiki.data.Any())
                     {
                         break;
                     }
 
                     foreach (TikiModel.Datum item in tiki.data)
                     {
-                        if(!string.IsNullOrEmpty(item.timeline.review_created_date))
+                        if(!string.IsNullOrEmpty(item.timeline?.review_created_date))
                         {
                             DateTime createComment = GetDate(item.timeline.review_created_date).Date;
                             if (createComment >= obj.Item3.Date && !String.IsNullOrEmpty(item.content))
@@ -139,6 +147,8 @@ namespace CommentTMDT.Controller
 
                                 temp.Id = Util.ConvertStringtoMD5(temp.UrlProduct + temp.IdComment);
                                 ++count;
+
+                                data.Add(temp);
                             }
                         }
                     }
@@ -152,7 +162,7 @@ namespace CommentTMDT.Controller
                         string json = JsonSerializer.Serialize(item);
                         Util.InsertPost(json);
 
-                        await Task.Delay(500);
+                        await Task.Delay(50);
                     }
                 }
 

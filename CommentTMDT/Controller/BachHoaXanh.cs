@@ -53,10 +53,11 @@ namespace CommentTMDT.Controller
             start += 100;
 
             Task<uint> task1 = GetCommentProduct(5_000);
+            Task<uint> task2 = GetCommentProduct(5_000);
 
-            await Task.WhenAll(task1);
+            await Task.WhenAll(task1, task2);
 
-            uint count = task1.Result;
+            uint count = task1.Result + task2.Result;
             await tgl.SendMessageToChannel($"Done {count} comment of Bach Hoa Xanh", Config_System.ID_TELEGRAM_BOT_GROUP_COMMENT_ECO);
         }
 
@@ -113,12 +114,12 @@ namespace CommentTMDT.Controller
                                 foreach (HtmlNode item in divComment)
                                 {
                                     DateTime dateComment = GetDate(item.SelectSingleNode("./div[not(@*)][last()]//span[@class='comment-time']")?.InnerText).Date;
-                                    if(dateComment.Year == 1)
+                                    if (dateComment.Year == 1)
                                     {
                                         continue;
                                     }
 
-                                    if(dateComment.Date < obj.Item3.Date)
+                                    if (dateComment.Date < obj.Item3.Date)
                                     {
                                         checkEndData[1] = true;
                                         break;
@@ -139,6 +140,7 @@ namespace CommentTMDT.Controller
                                     cmtJson.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp(cmtJson.CommentDate);
 
                                     lstComment.Add(cmtJson);
+                                    count++;
                                 }
                             }
 
@@ -192,10 +194,11 @@ namespace CommentTMDT.Controller
                                     user.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp((DateTime)user.CommentDate);
 
                                     lstComment.Add(user);
+                                    count++;
                                     #endregion
 
-                                    #region reply's admin
-                                    next:
+                                #region reply's admin
+                                next:
                                     DateTime dateReply = GetDate(item.SelectSingleNode(".//div[@class='child item']/div[not(@*)][last()]//span[@class='comment-time']")?.InnerText);
                                     if (dateReply.Year == 1)
                                     {
@@ -223,6 +226,8 @@ namespace CommentTMDT.Controller
                                     admin.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp(admin.CommentDate);
 
                                     lstComment.Add(admin);
+                                    count++;
+
                                     #endregion
                                 }
                             }
@@ -247,7 +252,7 @@ namespace CommentTMDT.Controller
                         string json = JsonSerializer.Serialize(item);
                         Util.InsertPost(json);
 
-                        await Task.Delay(500);
+                        await Task.Delay(50);
                     }
                 }
 

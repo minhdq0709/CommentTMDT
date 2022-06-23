@@ -59,6 +59,13 @@ namespace CommentTMDT.Controller
             await Task.WhenAll(task1, task2, task3, task4);
 
             count = task1.Result + task2.Result + task3.Result + task4.Result;
+            if (count > 0)
+            {
+                MySQL_Helper msql1 = new MySQL_Helper(Config_System.ConnectionToTableReportDaily);
+                await msql1.InsertToTableReportDaily(_urlHome, count);
+                msql1.Dispose();
+            }
+
             await tgl.SendMessageToChannel($"Done {count} comment of tiki", Config_System.ID_TELEGRAM_BOT_GROUP_COMMENT_ECO);
         }
 
@@ -159,7 +166,7 @@ namespace CommentTMDT.Controller
                 {
                     foreach (CommentModel item in data)
                     {
-                        string json = JsonSerializer.Serialize(item);
+                        string json = JsonSerializer.Serialize<CommentModel>(item, Util.opt);
                         Util.InsertPost(json);
 
                         await Task.Delay(50);

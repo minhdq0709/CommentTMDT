@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -35,6 +36,41 @@ namespace CommentTMDT.Helper
                 try
                 {
                     return await clien.GetStringAsync(url);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+        }
+
+        private const string proxyServer = "http://10.3.51.70:6210";
+
+        private static HttpClient HttpClientWithProxy()
+        {
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                Proxy = new WebProxy(proxyServer),
+                UseProxy = true
+            };
+
+            if (handler.SupportsAutomaticDecompression)
+            {
+                handler.AutomaticDecompression = DecompressionMethods.GZip;
+            }
+            return new HttpClient(handler);
+        }
+
+        public static async Task<string> GetData(string url)
+        {
+            using (CancellationTokenSource cts = new CancellationTokenSource(20_000))
+            {
+                try
+                {
+                    using (HttpClient client = HttpClientWithProxy())
+                    {
+                        return await client.GetStringAsync(url);
+                    }
                 }
                 catch (Exception)
                 {

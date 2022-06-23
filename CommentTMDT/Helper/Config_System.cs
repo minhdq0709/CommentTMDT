@@ -4,7 +4,7 @@
     {
         /* Server */
         public const string ConnectionToTableLinkProduct = @"Server=192.168.23.22;User ID =comment_ecommerce;Password=wFfE8aUmouQsaW7PkUS1;";
-
+        public const string ConnectionToTableReportDaily = @"Server=localhost;User ID = root;Password=123456aA@;";
 
         ///* Local */
         //public const string ConnectionToTableLinkProduct = @"Server=192.168.23.22;User ID = minhdq;Password=wgy2FdMt0rXfcmCWGSqa;";

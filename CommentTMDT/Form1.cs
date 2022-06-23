@@ -133,6 +133,7 @@ namespace CommentTMDT
                         await Task.Delay(TimeSpan.FromHours(1));
                     }
                 case NamePage.DI_DONG_THONG_MINH:
+                    DiDongThongMinh dd = new DiDongThongMinh();
                     while (true)
                     {
                         try
@@ -140,7 +141,6 @@ namespace CommentTMDT
                             lbStatus.Text = "Đang chạy";
                             lbIsError.Text = "Ko lỗi";
 
-                            DiDongThongMinh dd = new DiDongThongMinh(lbIsError, lbSumComment);
                             await dd.CrawlData();
 
                             lbStatus.Text = $"Đang dừng {DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss")}";
@@ -150,7 +150,7 @@ namespace CommentTMDT
                             lbIsError.Text = $"Có lỗi";
                         }
 
-                        await Task.Delay(TimeSpan.FromHours(1));
+                        await Task.Delay(TimeSpan.FromMinutes(10));
                     }
                 case NamePage.FPT_SHOP:
                     while (true)
@@ -241,7 +241,7 @@ namespace CommentTMDT
                         }
                         catch (Exception)
                         {
-                            lbIsError.Text = "Co lỗi";
+                            lbIsError.Text = "Có lỗi";
                         }
 
                         await Task.Delay(TimeSpan.FromMinutes(10));
@@ -260,7 +260,7 @@ namespace CommentTMDT
                         }
                         catch (Exception)
                         {
-                            lbIsError.Text = "Co lỗi";
+                            lbIsError.Text = "Có lỗi";
                         }
 
                         await Task.Delay(TimeSpan.FromMinutes(10));
@@ -279,8 +279,8 @@ namespace CommentTMDT
                             await tk.CrawlData();
                             lbStatus.Text = $"Đang dừng {DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss")}";
                         }
-                        catch (Exception ex) {
-                            lbIsError.Text = "Co lỗi";
+                        catch (Exception) {
+                            lbIsError.Text = "Có lỗi";
                         }
 
                         await Task.Delay(TimeSpan.FromMinutes(10));

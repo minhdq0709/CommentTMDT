@@ -51,7 +51,7 @@ namespace CommentTMDT.Controller
                 {
                     foreach (CommentModel item1 in data)
                     {
-                        string json = JsonSerializer.Serialize(item1);
+                        string json = JsonSerializer.Serialize<CommentModel>(item1, Util.opt);
                         Util.InsertPost(json);
 
                         await Task.Delay(50);

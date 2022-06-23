@@ -50,7 +50,7 @@ namespace CommentTMDT.Helper
                     {
                         while (await reader.ReadAsync())
                         {
-                            string timeStr = string.IsNullOrEmpty(reader["CommentUpdate"].ToString()) == true ? DateTime.Now.ToString("yyyy-MM-dd") : reader["CommentUpdate"].ToString();
+                            string timeStr = string.IsNullOrEmpty(reader["CommentUpdate"].ToString()) == true ? $"{DateTime.Now.Year}/01/01" : reader["CommentUpdate"].ToString();
 
                             data.Add(
                                 (
@@ -88,6 +88,36 @@ namespace CommentTMDT.Helper
 
                 cmd.Parameters.Add("@CommentUpdate", MySqlDbType.Date).Value = DateTime.Now.ToString("yyyy-MM-dd");
                 cmd.Parameters.Add("@id", MySqlDbType.String).Value = id;
+
+                row = await cmd.ExecuteNonQueryAsync();
+            }
+            catch (Exception) { }
+
+            if (_conn != null)
+            {
+                await _conn.CloseAsync();
+            }
+
+            return row;
+        }
+
+        public async Task<int> InsertToTableReportDaily(string domain, uint count)
+        {
+            int row = 0;
+
+            try
+            {
+                await _conn.OpenAsync();
+
+                string query = "Insert into comment_eco.report_daily(domain, total, create_time) values(@domain, @count, @create_time);";
+
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.Connection = _conn;
+                cmd.CommandText = query;
+
+                cmd.Parameters.Add("@create_time", MySqlDbType.Date).Value = DateTime.Now.ToString("yyyy-MM-dd");
+                cmd.Parameters.Add("@domain", MySqlDbType.Text).Value = domain;
+                cmd.Parameters.Add("@count", MySqlDbType.Int32).Value = count;
 
                 row = await cmd.ExecuteNonQueryAsync();
             }

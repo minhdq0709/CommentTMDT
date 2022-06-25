@@ -21,6 +21,8 @@ namespace CommentTMDT.Enum
         SENDO,
         SHOPEE,
         TIKI,
-        VIETTEL_STORE
+        VIETTEL_STORE,
+        SHOP_TRE_THO,
+        DIEN_MAY_CHO_LON
     }
 }

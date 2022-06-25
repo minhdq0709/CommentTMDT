@@ -244,5 +244,22 @@ namespace CommentTMDT.Helper
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
         }
+
+        public static string ConvertUtf_16ToUnicode(string utf16)
+        {
+            byte[] utf16Bytes = Encoding.Unicode.GetBytes(utf16);
+            byte[] utf8Bytes = Encoding.Convert(Encoding.Unicode, Encoding.UTF8, utf16Bytes);
+
+            // Return UTF8 bytes as ANSI string
+            string utf8String = Encoding.Default.GetString(utf8Bytes);
+
+            byte[] utf8BytesCovert = new byte[utf8String.Length];
+            for (int i = 0; i < utf8String.Length; ++i)
+            {
+                utf8BytesCovert[i] = (byte)utf8String[i];
+            }
+
+            return Encoding.UTF8.GetString(utf8BytesCovert, 0, utf8BytesCovert.Length);
+        }
     }
 }

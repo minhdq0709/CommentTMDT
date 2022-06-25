@@ -2,6 +2,7 @@
 using CefSharp.WinForms;
 using CommentTMDT.Controller;
 using CommentTMDT.Enum;
+using CommentTMDT.Helper;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -36,7 +37,9 @@ namespace CommentTMDT
                 new { Text = "Sendo", Value = NamePage.SENDO },
                 new { Text = "Shoppe", Value = NamePage.SHOPEE },
                 new { Text = "Tiki", Value = NamePage.TIKI },
-                new { Text = "Viette store", Value = NamePage.VIETTEL_STORE }
+                new { Text = "Viette store", Value = NamePage.VIETTEL_STORE },
+                new { Text = "Shop trẻ thơ", Value = NamePage.SHOP_TRE_THO},
+                new { Text = "Điện máy chợ lớn", Value = NamePage.DIEN_MAY_CHO_LON}
             };
 
             cbNamePage.DataSource = items;
@@ -67,6 +70,7 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromMinutes(10));
                     }
+
                 case NamePage.BACH_LONG:
                     InitBrowser("https://bachlongmobile.com");
                     await Task.Delay(20_000);
@@ -89,6 +93,7 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromMinutes(5));
                     }
+
                 case NamePage.CELL_PHONE_S:
                     while (true)
                     {
@@ -112,6 +117,7 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromHours(1));
                     }
+
                 case NamePage.CHO_LON:
                     while (true)
                     {
@@ -132,6 +138,7 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromHours(1));
                     }
+
                 case NamePage.DI_DONG_THONG_MINH:
                     DiDongThongMinh dd = new DiDongThongMinh();
                     while (true)
@@ -152,6 +159,7 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromMinutes(10));
                     }
+
                 case NamePage.FPT_SHOP:
                     while (true)
                     {
@@ -175,6 +183,7 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromHours(1));
                     }
+
                 case NamePage.HOANG_HA:
                     HoangHa hh = new HoangHa();
                     while (true)
@@ -195,6 +204,7 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromMinutes(10));
                     }
+
                 case NamePage.KID_PLAZA:
                     InitBrowser("https://www.kidsplaza.vn/");
                     await Task.Delay(20_000);
@@ -221,12 +231,14 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromMinutes(10));
                     }
+
                 case NamePage.LAZADA:
                     while (true)
                     {
                         Lazada lz = new Lazada(lbIsError, lbSumComment);
                         await lz.CrawlData();
                     }
+
                 case NamePage.META:
                     Meta mt = new Meta();
                     while(true)
@@ -246,6 +258,7 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromMinutes(10));
                     }
+
                 case NamePage.SENDO:
                     Sendo sd = new Sendo();
                     while (true)
@@ -265,8 +278,10 @@ namespace CommentTMDT
 
                         await Task.Delay(TimeSpan.FromMinutes(10));
                     }
+
                 case NamePage.SHOPEE:
                     break;
+
                 case NamePage.TIKI:
                     Tiki tk = new Tiki();
                     while (true)
@@ -280,6 +295,29 @@ namespace CommentTMDT
                             lbStatus.Text = $"Đang dừng {DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss")}";
                         }
                         catch (Exception) {
+                            lbIsError.Text = "Có lỗi";
+                        }
+
+                        await Task.Delay(TimeSpan.FromMinutes(10));
+                    }
+
+                case NamePage.SHOP_TRE_THO:
+                    break;
+
+                case NamePage.DIEN_MAY_CHO_LON:
+                    DienMayChoLon stt = new DienMayChoLon();
+                    while (true)
+                    {
+                        try
+                        {
+                            lbStatus.Text = "Đang chạy";
+                            lbIsError.Text = "Ko lỗi";
+
+                            await stt.CrawlData();
+                            lbStatus.Text = $"Đang dừng {DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss")}";
+                        }
+                        catch (Exception ex)
+                        {
                             lbIsError.Text = "Có lỗi";
                         }
 

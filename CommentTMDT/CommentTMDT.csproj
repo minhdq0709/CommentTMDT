@@ -148,6 +148,7 @@
     <Compile Include="Controller\Lazada.cs" />
     <Compile Include="Controller\Meta.cs" />
     <Compile Include="Controller\Sendo.cs" />
+    <Compile Include="Controller\Shoppe.cs" />
     <Compile Include="Controller\ShopTreTho.cs" />
     <Compile Include="Controller\Tiki.cs" />
     <Compile Include="Enum\NamePage.cs" />
@@ -167,7 +168,9 @@
     <Compile Include="Model\CommentModel.cs" />
     <Compile Include="Model\DienMayChoLonModel.cs" />
     <Compile Include="Model\LazadaModel.cs" />
+    <Compile Include="Model\ProductWaitingModel.cs" />
     <Compile Include="Model\SendoModel.cs" />
+    <Compile Include="Model\ShoppeModel.cs" />
     <Compile Include="Model\TikiModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

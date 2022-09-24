@@ -143,7 +143,7 @@ namespace CommentTMDT.Controller
                                         cmtJson.PostDateTimeStamp = Util.ConvertDateTimeToTimeStamp(cmtJson.PostDate);
 
                                         cmtJson.Id = Util.ConvertStringtoMD5(obj.Item2 + cmtJson.PostDateTimeStamp.ToString() + "-1");
-                                        cmtJson.IdComment = -1;
+                                        cmtJson.IdComment = 0;
 
                                         cmtJson.CommentDate = dateComment;
                                         cmtJson.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp(dateComment);
@@ -198,7 +198,7 @@ namespace CommentTMDT.Controller
                                         cmtJson.PostDateTimeStamp = Util.ConvertDateTimeToTimeStamp(cmtJson.PostDate);
 
                                         cmtJson.Id = Util.ConvertStringtoMD5(obj.Item2 + cmtJson.PostDateTimeStamp.ToString() + "-1");
-                                        cmtJson.IdComment = -1;
+                                        cmtJson.IdComment = 0;
 
                                         cmtJson.CommentDate = dateReview;
                                         cmtJson.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp((DateTime)cmtJson.CommentDate);

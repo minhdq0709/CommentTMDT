@@ -150,7 +150,7 @@ namespace CommentTMDT.Controller
                                 cmtUser.ProductId = productId;
                                 cmtUser.PostDate = DateTime.Now;
                                 cmtUser.PostDateTimeStamp = Util.ConvertDateTimeToTimeStamp(cmtUser.PostDate);
-                                cmtUser.IdComment = (int)(String.IsNullOrEmpty(idComment) ? -1 : Util.convertTextToNumber(idComment));
+                                cmtUser.IdComment = (ulong)(String.IsNullOrEmpty(idComment) ? -1 : Util.convertTextToNumber(idComment));
                                 cmtUser.Id = Util.ConvertStringtoMD5(obj.Item1 + cmtUser.PostDateTimeStamp.ToString() + cmtUser.IdComment.ToString());
 
                                 cmtUser.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp((DateTime)cmtUser.CommentDate);
@@ -181,7 +181,7 @@ namespace CommentTMDT.Controller
                                 cmtAdmin.UserComment = "META";
                                 cmtAdmin.Comment = Util.RemoveSpecialCharacter(item.SelectSingleNode(@".//div[@class='comment-replied']//div[@class='show-replied']")?.InnerText);
                                 cmtAdmin.ProductId = productId;
-                                cmtAdmin.IdComment = (int)(String.IsNullOrEmpty(idComment) ? -1 : Util.convertTextToNumber(idComment));
+                                cmtAdmin.IdComment = (ulong)(String.IsNullOrEmpty(idComment) ? -1 : Util.convertTextToNumber(idComment));
                                 cmtAdmin.Id = Util.ConvertStringtoMD5(obj.Item1 + cmtAdmin.PostDateTimeStamp.ToString() + cmtAdmin.IdComment.ToString());
 
                                 cmtAdmin.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp((DateTime)cmtAdmin.CommentDate);

@@ -97,7 +97,7 @@ namespace CommentTMDT.Controller
                     cmt.PostDateTimeStamp = Util.ConvertDateTimeToTimeStamp(cmt.PostDate);
                     cmt.Domain = _urlHome;
                     cmt.UrlProduct = data.Item2;
-                    cmt.IdComment = -1;
+                    cmt.IdComment = 0;
                     cmt.UserComment = item.SelectSingleNode(".//div[@class='username']/label")?.InnerText;
                     cmt.Comment = Util.RemoveSpecialCharacter(item.SelectSingleNode(".//div[@class='content']")?.InnerText);
                     cmt.Id = Util.ConvertStringtoMD5(data.Item2 + cmt.CommentDateTimeStamp + cmt.IdComment);

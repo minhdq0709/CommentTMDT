@@ -92,7 +92,7 @@ namespace CommentTMDT.Controller
                                 }
 
                                 custommer.Id = Util.ConvertStringtoMD5($"{url}{custommer.CommentDateTimeStamp}-1");
-                                custommer.IdComment = -1;
+                                custommer.IdComment = 0;
 
                                 listCommentJson.Add(custommer);
                             }
@@ -130,7 +130,7 @@ namespace CommentTMDT.Controller
                                     }
 
                                     admin.Id = Util.ConvertStringtoMD5($"{url}{admin.CommentDateTimeStamp}-1");
-                                    admin.IdComment = -1;
+                                    admin.IdComment = 0;
 
                                     listCommentJson.Add(admin);
                                 }

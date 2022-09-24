@@ -51,9 +51,9 @@ namespace CommentTMDT.Model
 
         public class Item
         {
-            public object reviewRateId { get; set; }
+            public ulong reviewRateId { get; set; }
             public string reviewType { get; set; }
-            public object buyerId { get; set; }
+            public ulong buyerId { get; set; }
             public string buyerName { get; set; }
             public object buyerEmail { get; set; }
             public object realBuyerName { get; set; }

@@ -141,7 +141,7 @@ namespace CommentTMDT.Controller
                                     cmtJson.Comment = Util.RemoveSpecialCharacter(item.SelectSingleNode("./div[not(@*)][1]")?.InnerText);
                                     cmtJson.PostDate = DateTime.Now;
                                     cmtJson.PostDateTimeStamp = Util.ConvertDateTimeToTimeStamp(DateTime.Now);
-                                    cmtJson.IdComment = ((int)(String.IsNullOrEmpty(item.Attributes["data-id"]?.Value) ? -1 : Util.convertTextToNumber(item.Attributes["data-id"]?.Value)));
+                                    cmtJson.IdComment = ((ulong)(String.IsNullOrEmpty(item.Attributes["data-id"]?.Value) ? 0 : Util.convertTextToNumber(item.Attributes["data-id"]?.Value)));
                                     cmtJson.Id = Util.ConvertStringtoMD5(obj.Item2 + cmtJson.IdComment.ToString());
                                     cmtJson.CommentDate = dateComment;
                                     cmtJson.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp(cmtJson.CommentDate);
@@ -195,7 +195,7 @@ namespace CommentTMDT.Controller
                                     user.Comment = Util.RemoveSpecialCharacter(item.SelectSingleNode("./div[not(@*)][1]")?.InnerText);
                                     user.PostDate = DateTime.Now;
                                     user.PostDateTimeStamp = Util.ConvertDateTimeToTimeStamp(user.PostDate);
-                                    user.IdComment = (int)(String.IsNullOrEmpty(item.Attributes["data-id"]?.Value) ? -1 : Util.convertTextToNumber(item.Attributes["data-id"]?.Value));
+                                    user.IdComment = (ulong)(String.IsNullOrEmpty(item.Attributes["data-id"]?.Value) ? -1 : Util.convertTextToNumber(item.Attributes["data-id"]?.Value));
                                     user.Id = Util.ConvertStringtoMD5(obj.Item2 + user.IdComment.ToString());
                                     user.CommentDate = dateQuestion;
                                     user.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp((DateTime)user.CommentDate);
@@ -227,7 +227,7 @@ namespace CommentTMDT.Controller
                                     admin.Comment = Util.RemoveSpecialCharacter(item.SelectSingleNode(".//div[@class='child item']/div[not(@*)][1][text()[preceding-sibling::br] or /span/span/text()[preceding-sibling::br]]")?.InnerText);
                                     admin.PostDate = DateTime.Now;
                                     admin.PostDateTimeStamp = Util.ConvertDateTimeToTimeStamp(admin.PostDate);
-                                    admin.IdComment = (int)(String.IsNullOrEmpty(item.Attributes["data-id"]?.Value) ? -1 : Util.convertTextToNumber(item.Attributes["data-id"]?.Value));
+                                    admin.IdComment = (ulong)(String.IsNullOrEmpty(item.Attributes["data-id"]?.Value) ? -1 : Util.convertTextToNumber(item.Attributes["data-id"]?.Value));
                                     admin.Id = Util.ConvertStringtoMD5(obj.Item2 + admin.IdComment.ToString());
                                     admin.CommentDate = dateReply;
                                     admin.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp(admin.CommentDate);

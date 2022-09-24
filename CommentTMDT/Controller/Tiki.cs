@@ -15,195 +15,212 @@ using System.Web;
 
 namespace CommentTMDT.Controller
 {
-    class Tiki
-    {
-        private HttpClient _client = new HttpClient();
-        private const string _urlHome = @"https://tiki.vn";
-        private const string _urlApiHome = @"https://tiki.vn/api/v2/reviews";
-        private ConcurrentQueue<(string, string, DateTime)> _myQueue = new ConcurrentQueue<(string, string, DateTime)>();
-        private uint start = 0;
-        private readonly Telegram_Helper tgl;
+	class Tiki
+	{
+		private HttpClient _client = new HttpClient();
+		private const string _urlHome = @"https://tiki.vn";
+		private const string _urlApiHome = @"https://tiki.vn/api/v2/reviews";
+		private ConcurrentQueue<ProductWaitingModel> _myQueue = new ConcurrentQueue<ProductWaitingModel>();
+		private uint start = 0;
+		private readonly Telegram_Helper tgl;
 
-        public Tiki()
-        {
-            tgl = new Telegram_Helper(Config_System.KEY_BOT);
-        }
+		public Tiki()
+		{
+			tgl = new Telegram_Helper(Config_System.KEY_BOT);
+		}
 
-        public async Task CrawlData()
-        {
-            uint count = 0;
+		public async Task CrawlData()
+		{
+			uint count = 0;
 
-            MySQL_Helper msql = new MySQL_Helper(Config_System.ConnectionToTableLinkProduct);
-            List<(string, string, DateTime)> dataUrl = await msql.GetLinkProductByDomain(_urlHome, start, 100);
-            msql.Dispose();
+			MySQL_Helper msql = new MySQL_Helper(Config_System.ConnectionToTableLinkProduct);
+			//List<(string, string, DateTime)> dataUrl = await msql.GetLinkProductByDomain(_urlHome, start, 100);
+			List<ProductWaitingModel> dataUrl = msql.GetLinkProductPriorityByDomain(_urlHome, start, 100); // priority
 
-            if (!dataUrl.Any())
-            {
-                start = 0;
-                return;
-            }
+			msql.Dispose();
 
-            foreach ((string, string, DateTime) item in dataUrl)
-            {
-                _myQueue.Enqueue(item);
-            }
+			if (!dataUrl.Any())
+			{
+				start = 0;
+				return;
+			}
 
-            /* Next data */
-            start += 100;
+			foreach (ProductWaitingModel item in dataUrl)
+			{
+				_myQueue.Enqueue(item);
+			}
 
-            Task<uint> task1 = GetCommentProduct(1_000);
-            Task<uint> task2 = GetCommentProduct(2_000);
-            Task<uint> task3 = GetCommentProduct(3_000);
-            Task<uint> task4 = GetCommentProduct(4_000);
+			/* Next data */
+			start += 100;
 
-            await Task.WhenAll(task1, task2, task3, task4);
+			Task<uint> task1 = GetCommentProduct(1_000);
+			Task<uint> task2 = GetCommentProduct(2_000);
+			Task<uint> task3 = GetCommentProduct(3_000);
+			Task<uint> task4 = GetCommentProduct(4_000);
 
-            count = task1.Result + task2.Result + task3.Result + task4.Result;
-            if (count > 0)
-            {
-                MySQL_Helper msql1 = new MySQL_Helper(Config_System.ConnectionToTableReportDaily);
-                await msql1.InsertToTableReportDaily(_urlHome, count);
-                msql1.Dispose();
-            }
+			await Task.WhenAll(task1, task2, task3, task4); //, task2, task3, task4
 
-            await tgl.SendMessageToChannel($"Done {count} comment of tiki", Config_System.ID_TELEGRAM_BOT_GROUP_COMMENT_ECO);
-        }
+			count = task1.Result + task2.Result + task3.Result + task4.Result;
+			if (count > 0)
+			{
+				MySQL_Helper msql1 = new MySQL_Helper(Config_System.ConnectionToTableReportDaily);
+				await msql1.InsertToTableReportDaily(_urlHome, count);
+				msql1.Dispose();
+			}
 
-        private async Task<uint> GetCommentProduct(ushort delay)
-        {
-            (string, string, DateTime) obj = ("", "", DateTime.Now);
-            UriBuilder builder = new UriBuilder(_urlApiHome);
-            NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
-            MySQL_Helper msql = new MySQL_Helper(Config_System.ConnectionToTableLinkProduct);
-            uint count = 0;
+			await tgl.SendMessageToChannel($"Done {count} comment of tiki", Config_System.ID_TELEGRAM_BOT_GROUP_COMMENT_ECO);
+		}
 
-            query["limit"] = "100";
-            query["include"] = "comments,contribute_info";
-            query["seller_id"] = "1";
-            query["sort"] = "id|desc";
+		public string GetRegexMatchValue(string input, string regex, RegexOptions options = RegexOptions.IgnoreCase, bool isGetSingleLine = false)
+		{
+			try
+			{
+				if (isGetSingleLine)
+				{
+					options = options | RegexOptions.Singleline;
+				}
 
-            while (_myQueue.TryDequeue(out obj))
-            {
-                List<CommentModel> data = new List<CommentModel>();
-                ushort indexPage = 0;
-                (string idProduct, string spid) dataId = SplitIdParamToUrl(obj.Item2);
+				return Regex.Match(input, regex, options).Value;
+			}
+			catch (Exception)
+			{
+				return string.Empty;
+			}
+		}
 
-                query["spid"] = dataId.spid ?? "0";
-                query["product_id"] = dataId.idProduct ?? "0";
+		private async Task<uint> GetCommentProduct(ushort delay)
+		{
+			ProductWaitingModel obj = new ProductWaitingModel();
+			UriBuilder builder = new UriBuilder(_urlApiHome);
+			NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
+			MySQL_Helper msql = new MySQL_Helper(Config_System.ConnectionToTableLinkProduct);
+			uint count = 0;
 
-                while (true)
-                {
-                    query["page"] = $"{++indexPage}";
+			query["limit"] = "20";
 
-                    builder.Query = query.ToString();
-                    string url1 = builder.ToString();
+			while (_myQueue.TryDequeue(out obj))
+			{
+				DateTime lastDateComment = obj.LastCommentUpdate.Date;
+				ushort indexPage = 0;
+				(string idProduct, string spid) dataId = SplitIdParamToUrl(obj.UrlToGetComment);
 
-                    string json = null;
-                    using (CancellationTokenSource cts = new CancellationTokenSource(20_000))
-                    {
-                        try
-                        {
-                            json = await _client.GetStringAsync(url1).ConfigureAwait(false);
-                        }
-                        catch (Exception)
-                        {
-                            break;
-                        }
-                    }
+				uint count1 = 0;
 
-                    if (String.IsNullOrEmpty(json))
-                    {
-                        break;
-                    }
+				query["spid"] = dataId.spid ?? "0";
+				query["product_id"] = dataId.idProduct ?? "0";
 
-                    await Task.Delay(delay);
+				while (true)
+				{
+					query["page"] = $"{++indexPage}";
 
-                    TikiModel.Root tiki = null;
-                    try
-                    {
-                        tiki = JsonSerializer.Deserialize<TikiModel.Root>(json);
-                    }
-                    catch (Exception ex) { }
+					builder.Query = query.ToString();
+					string url1 = builder.ToString();
 
-                    if (tiki?.data == null || !tiki.data.Any())
-                    {
-                        break;
-                    }
+					string json = null;
+					using (CancellationTokenSource cts = new CancellationTokenSource(20_000))
+					{
+						try
+						{
+							json = await _client.GetStringAsync(url1).ConfigureAwait(false);
+						}
+						catch (Exception)
+						{
+							break;
+						}
+					}
 
-                    foreach (TikiModel.Datum item in tiki.data)
-                    {
-                        if(!string.IsNullOrEmpty(item.timeline?.review_created_date))
-                        {
-                            DateTime createComment = GetDate(item.timeline.review_created_date).Date;
-                            if (createComment >= obj.Item3.Date && !String.IsNullOrEmpty(item.content))
-                            {
-                                CommentModel temp = new CommentModel();
-                                temp.IdComment = item.id ?? 0;
+					if (String.IsNullOrEmpty(json))
+					{
+						break;
+					}
 
-                                temp.ProductId = dataId.idProduct;
-                                temp.Domain = "https://tiki.vn/";
-                                temp.UrlProduct = obj.Item2;
+					await Task.Delay(delay);
 
-                                temp.UserComment = item.created_by?.full_name;
-                                temp.Comment = item.content;
+					TikiModel.Root tiki = null;
+					try
+					{
+						tiki = JsonSerializer.Deserialize<TikiModel.Root>(json);
+					}
+					catch (Exception) { }
 
-                                temp.PostDate = DateTime.Now;
-                                temp.PostDateTimeStamp = Util.ConvertDateTimeToTimeStamp(temp.PostDate);
-                                temp.CommentDate = createComment;
-                                temp.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp(createComment);
+					if (!tiki?.data.Any() ?? true)
+					{
+						break;
+					}
 
-                                temp.Id = Util.ConvertStringtoMD5(temp.UrlProduct + temp.IdComment);
-                                ++count;
+					foreach (TikiModel.Datum item in tiki.data)
+					{
+						if (!string.IsNullOrEmpty(item.timeline?.review_created_date))
+						{
+							DateTime createComment = GetDate(item.timeline.review_created_date).Date;
 
-                                data.Add(temp);
-                            }
-                        }
-                    }
-                }
+							if (createComment < lastDateComment.Date)
+							{
+								break;
+							}
 
-                /* Send to kafka */
-                if (data.Any())
-                {
-                    foreach (CommentModel item in data)
-                    {
-                        string json = JsonSerializer.Serialize<CommentModel>(item, Util.opt);
-                        Util.InsertPost(json);
+							/* Last date comment */
+							lastDateComment = createComment;
+							if (!String.IsNullOrEmpty(item.content))
+							{
+								CommentModel temp = new CommentModel();
+								temp.IdComment = (ulong)(item.id ?? 0);
 
-                        await Task.Delay(50);
-                    }
-                }
+								temp.ProductId = dataId.idProduct;
+								temp.Domain = "https://tiki.vn/";
+								temp.UrlProduct = obj.Url;
 
-                data.Clear();
-                data.TrimExcess();
+								temp.UserComment = item.created_by?.full_name;
+								temp.Comment = item.content;
 
-                await msql.UpdateTimeGetComment(obj.Item1);
-                await Task.Delay(1_000);
-            }
+								temp.PostDate = DateTime.Now;
+								temp.PostDateTimeStamp = Util.ConvertDateTimeToTimeStamp(temp.PostDate);
+								temp.CommentDate = createComment;
+								temp.CommentDateTimeStamp = Util.ConvertDateTimeToTimeStamp(createComment);
 
-            msql.Dispose();
+								temp.Id = Util.ConvertStringtoMD5(temp.UrlProduct + temp.IdComment);
 
-            return count;
-        }
+								string jsonObj = JsonSerializer.Serialize<CommentModel>(temp, Util.opt);
+								Util.InsertPost(jsonObj);
 
-        private (string idProduct, string spid) SplitIdParamToUrl(string url)
-        {
-            try
-            {
-                MatchCollection matches = Regex.Matches(url, @"\d+(?=.html)|(?<=spid=)\d+");
-                if (matches.Count == 2)
-                {
-                    /*[0]: product_id, [1]: spid */
-                    return (matches[0].Value, matches[1].Value);
-                }
-            }
-            catch (Exception) { }
+								await Task.Delay(50);
+								++count;
+								++count1;
+							}
+						}
+					}
+				}
 
-            return (null, null);
-        }
+				await msql.UpdateTimeGetCommentPriority(Convert.ToInt32(obj.Id), lastDateComment, count1);
+				await msql.InsertHistoryProduct(_urlHome, obj.SiteId, obj.Url, count1, obj.Id);
 
-        private DateTime GetDate(string strDate)
-        {
-            return DateTime.ParseExact(strDate, "yyyy-MM-dd HH:mm:ss", new CultureInfo("en-US"), DateTimeStyles.None);
-        }
-    }
+				await Task.Delay(1_000);
+			}
+
+			msql.Dispose();
+
+			return count;
+		}
+
+		private (string idProduct, string spid) SplitIdParamToUrl(string url)
+		{
+			try
+			{
+				MatchCollection matches = Regex.Matches(url, @"\d+(?=.html)|(?<=spid=)\d+");
+				if (matches.Count == 2)
+				{
+					/*[0]: product_id, [1]: spid */
+					return (matches[0].Value, matches[1].Value);
+				}
+			}
+			catch (Exception) { }
+
+			return (null, null);
+		}
+
+		private DateTime GetDate(string strDate)
+		{
+			return DateTime.ParseExact(strDate, "yyyy-MM-dd HH:mm:ss", new CultureInfo("en-US"), DateTimeStyles.None);
+		}
+	}
 }

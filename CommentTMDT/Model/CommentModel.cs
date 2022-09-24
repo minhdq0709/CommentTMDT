@@ -15,6 +15,6 @@ namespace CommentTMDT.Model
         public double PostDateTimeStamp { get; set; }
         public DateTime CommentDate { set; get; }
         public double CommentDateTimeStamp { set; get; }
-        public int IdComment { set; get; }
+        public ulong IdComment { set; get; }
     }
 }

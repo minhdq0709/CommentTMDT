@@ -77,7 +77,7 @@ namespace CommentTMDT.Controller
 
                         data.ProductId = _document.DocumentNode.SelectSingleNode("//input[@id='id-product']")?.Attributes["value"]?.Value;
                         data.Id = Util.ConvertStringtoMD5(url + data.CommentDateTimeStamp + "-1");
-                        data.IdComment = -1;
+                        data.IdComment = 0;
 
                         lstData.Add(data);
                     }

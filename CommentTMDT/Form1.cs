@@ -23,23 +23,23 @@ namespace CommentTMDT
 			cbNamePage.ValueMember = "Value";
 
 			var items = new[] {
-								new { Text = "Bách hóa xanh", Value = NamePage.BACH_HOA_XANH },
-								new { Text = "Bạch Long", Value = NamePage.BACH_LONG },
-								new { Text = "Cell phoneS", Value = NamePage.CELL_PHONE_S },
-								new { Text = "Chợ lớn", Value = NamePage.CHO_LON },
-								new { Text = "DDTM", Value = NamePage.DI_DONG_THONG_MINH },
-								new { Text = "FPT shop", Value = NamePage.FPT_SHOP },
-								new { Text = "Hoàng hà", Value = NamePage.HOANG_HA },
-								new { Text = "Kid plaza", Value = NamePage.KID_PLAZA },
-								new { Text = "Lazada", Value = NamePage.LAZADA },
-								new { Text = "Meta", Value = NamePage.META },
-								new { Text = "Sendo", Value = NamePage.SENDO },
-								new { Text = "Shoppe", Value = NamePage.SHOPEE },
-								new { Text = "Tiki", Value = NamePage.TIKI },
-								new { Text = "Viette store", Value = NamePage.VIETTEL_STORE },
-								new { Text = "Shop trẻ thơ", Value = NamePage.SHOP_TRE_THO},
-								new { Text = "Điện máy chợ lớn", Value = NamePage.DIEN_MAY_CHO_LON}
-						};
+					new { Text = "Bách hóa xanh", Value = NamePage.BACH_HOA_XANH },
+					new { Text = "Bạch Long", Value = NamePage.BACH_LONG },
+					new { Text = "Cell phoneS", Value = NamePage.CELL_PHONE_S },
+					new { Text = "Chợ lớn", Value = NamePage.CHO_LON },
+					new { Text = "DDTM", Value = NamePage.DI_DONG_THONG_MINH },
+					new { Text = "FPT shop", Value = NamePage.FPT_SHOP },
+					new { Text = "Hoàng hà", Value = NamePage.HOANG_HA },
+					new { Text = "Kid plaza", Value = NamePage.KID_PLAZA },
+					new { Text = "Lazada", Value = NamePage.LAZADA },
+					new { Text = "Meta", Value = NamePage.META },
+					new { Text = "Sendo", Value = NamePage.SENDO },
+					new { Text = "Shoppe", Value = NamePage.SHOPEE },
+					new { Text = "Tiki", Value = NamePage.TIKI },
+					new { Text = "Viette store", Value = NamePage.VIETTEL_STORE },
+					new { Text = "Shop trẻ thơ", Value = NamePage.SHOP_TRE_THO},
+					new { Text = "Điện máy chợ lớn", Value = NamePage.DIEN_MAY_CHO_LON}
+			};
 
 			cbNamePage.DataSource = items;
 		}

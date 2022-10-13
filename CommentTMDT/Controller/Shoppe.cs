@@ -41,7 +41,7 @@ namespace CommentTMDT.Controller
 			Task<uint> task1 = Run();
 			Task<uint> task2 = Run();
 
-			await Task.WhenAll(task1, task2); //, task2
+			await Task.WhenAll(task1, task2);
 
 			count += task1.Result + task2.Result;
 			if (count > 0)
